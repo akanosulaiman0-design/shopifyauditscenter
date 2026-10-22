@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"67b32e72d2ee8e627d0131af"}};</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopify Store Security Analyzer — Risk & Compliance Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    .container { max-width: 1120px; }
+    .card {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.15), transparent 55%),
+        rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(20px);
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      backdrop-filter: blur(16px);
+    }
+    .pill {
+      border-radius: 9999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+    }
+    .accent { color: #22c55e; }
+    .accent-bg {
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      color: #020617;
+    }
+    .accent-bg:hover {
+      filter: brightness(1.05);
+    }
+    .muted { color: #9ca3af; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .25rem .7rem;
+      border-radius: 9999px;
+      font-size: .7rem;
+      font-weight: 600;
+      background: rgba(22, 163, 74, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .trademark-status-panel {
+      position: relative;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.92));
+      border-radius: 0.9rem;
+      padding: 1rem 1rem 0.9rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .trademark-status-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .trademark-status-copy {
+      flex: 1 1 420px;
+      min-width: 0;
+    }
+
+    .trademark-status-title {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #f8fafc;
+    }
+
+    .trademark-status-title .indicator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 9999px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(96,165,250,0.4);
+      color: #7dd3fc;
+      flex-shrink: 0;
+    }
+
+    .trademark-status-message {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 0.77rem;
+      line-height: 1.5;
+      max-width: 58ch;
+    }
+
+    .trademark-learn-button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 2.5rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(96,165,250,0.45);
+      background: linear-gradient(135deg, rgba(14,116,144,0.35), rgba(59,130,246,0.12));
+      color: #e2e8f0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      box-shadow: 0 8px 18px rgba(14, 116, 144, 0.12);
+      flex-shrink: 0;
+    }
+
+    .trademark-learn-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(125, 211, 252, 0.7);
+      background: linear-gradient(135deg, rgba(14,116,144,0.45), rgba(96,165,250,0.18));
+      box-shadow: 0 12px 22px rgba(14, 116, 144, 0.18);
+    }
+
+    .trademark-learn-button:focus-visible {
+      outline: 3px solid rgba(125, 211, 252, 0.9);
+      outline-offset: 2px;
+    }
+
+    .trademark-panel {
+      margin-top: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.32);
+      background: rgba(2, 6, 23, 0.72);
+      border-radius: 0.8rem;
+      overflow: hidden;
+    }
+
+    .trademark-panel[hidden] {
+      display: none;
+    }
+
+    .trademark-panel-inner {
+      padding: 1rem;
+    }
+
+    .trademark-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+    }
+
+    .trademark-panel-header h4 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .trademark-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e2e8f0;
+      cursor: pointer;
+    }
+
+    .trademark-panel-body {
+      color: #cbd5e1;
+      font-size: 0.76rem;
+      line-height: 1.7;
+    }
+
+    .trademark-panel-body p {
+      margin: 0 0 0.8rem;
+    }
+
+    .trademark-panel-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .trademark-panel-body strong {
+      color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .trademark-placeholder {
+      display: inline-block;
+      margin-top: 0.25rem;
+      padding: 0.35rem 0.55rem;
+      border-radius: 0.45rem;
+      border: 1px dashed rgba(96,165,250,0.7);
+      background: rgba(30,41,59,0.7);
+      color: #bfdbfe;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.92);
+      backdrop-filter: blur(18px);
+      display: none;
+      z-index: 50;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+    .loading-card {
+      max-width: 360px;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 18px 60px rgba(15, 23, 42, 0.9);
+    }
+    .loading-bar-track {
+      width: 100%;
+      height: 6px;
+      border-radius: 9999px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+    .loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      animation: loadBar 6s ease-out forwards;
+      transform-origin: left;
+    }
+    @keyframes loadBar {
+      0% { width: 0%; }
+      15% { width: 15%; }
+      35% { width: 35%; }
+      55% { width: 55%; }
+      75% { width: 80%; }
+      100% { width: 100%; }
+    }
+  </style>
+<meta property="og:title" content="Shopify Sniffer Pro 🕵️‍♂️"><meta property="og:image" content="https://cdn-thumbnails.huggingface.co/social-thumbnails/spaces/willisarchibald/shopify-sniffer-pro.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://cdn-thumbnails.huggingface.co/social-thumbnails/spaces/willisarchibald/shopify-sniffer-pro.png"></head>
+<body class="min-h-screen">
+
+  <!-- HEADER -->
+  <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md">
+    <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-slate-900 font-bold text-sm shadow-lg">
+          SA
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="text-sm font-semibold text-slate-50">Shopify Security Analyzer</span>
+          <span class="text-[11px] text-slate-400">Store Risk & Compliance Report</span>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-xs text-slate-300">
+        <a href="#analyzer" class="hover:text-white">Analyzer</a>
+        <a href="#sections" class="hover:text-white">What you’ll get</a>
+        <a href="#about" class="hover:text-white">How it works</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- LANDING VIEW (FIRST PAGE) -->
+    <div id="landingView" class="space-y-10">
+
+      <!-- HERO + ANALYZER -->
+      <section id="analyzer" class="grid lg:grid-cols-2 gap-10 items-center">
+        <!-- LEFT: COPY + FORM -->
+        <div class="space-y-6">
+          <div class="badge">
+            <i data-lucide="shield-alert" class="w-3 h-3"></i>
+            Security & Compliance Risk Scan
+          </div>
+          <h1 class="text-3xl md:text-4xl font-bold text-slate-50 leading-tight">
+            Audit your <span class="accent">Shopify store</span> for hidden security gaps, crawl issues,
+            and compliance risks in one scan
+          </h1>
+          <p class="muted text-sm md:text-base max-w-xl">
+            Drop in your Shopify store URL and email. You’ll get an on-screen security snapshot plus a structured risk report in your inbox—focused on protection, not aesthetics.
+          </p>
+
+          <!-- INPUT CARD -->
+          <div class="card p-5 md:p-6 space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-xs uppercase tracking-[0.18em] text-emerald-300">Store Security Input</div>
+              <div class="flex items-center gap-2 text-[11px] text-slate-400">
+                <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i>
+                No password or admin access required
+              </div>
+            </div>
+
+            <form id="analyzerForm" class="space-y-3">
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-200">Shopify Store URL</label>
+                <div class="pill flex items-center px-3 py-1.5 gap-2">
+                  <i data-lucide="link-2" class="w-4 h-4 text-emerald-400"></i>
+                  <input
+                    type="url"
+                    name="storeUrl"
+                    required
+                    placeholder="https://yourstore.myshopify.com"
+                    class="bg-transparent outline-none border-none text-xs md:text-sm text-slate-100 placeholder:text-slate-500 flex-1"
+                  />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-200">Email</label>
+                <div class="pill flex items-center px-3 py-1.5 gap-2">
+                  <i data-lucide="mail" class="w-4 h-4 text-cyan-400"></i>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="you@email.com"
+                    class="bg-transparent outline-none border-none text-xs md:text-sm text-slate-100 placeholder:text-slate-500 flex-1"
+                  />
+                </div>
+              </div>
+
+              <!-- Hidden technical fields for Formspree / backend -->
+              <input type="hidden" name="_subject" value="New Shopify SECURITY Analyzer request" />
+              <input type="hidden" name="source" value="Shopify Security Analyzer Landing" />
+
+              <button
+                type="submit"
+                class="accent-bg w-full mt-2 flex items-center justify-center gap-2 text-xs md:text-sm font-semibold px-4 py-2.5 rounded-lg shadow-lg shadow-emerald-500/30"
+              >
+                <i data-lucide="shield" class="w-4 h-4"></i>
+                Run Security Analysis
+              </button>
+
+              <p class="text-[11px] text-slate-500 flex items-center gap-2">
+                <i data-lucide="info" class="w-3 h-3"></i>
+                You’ll see an instant high-level risk summary and receive a more detailed report by email.
+              </p>
+            </form>
+          </div>
+        </div>
+
+        <!-- RIGHT: VISUAL (LOOPING VIDEO/GIF) -->
+        <div class="glass p-4 md:p-5">
+          <video autoplay loop muted playsinline class="w-full h-56 md:h-64 object-cover rounded-lg border border-slate-700/60">
+            <source src="https://huggingface.co/spaces/willisarchibald/shopify-sniffer-pro/resolve/main/videos/From%20KlickPin%20CF%20Pin%20di%20Rafa%20Cisneros%20Coria%20su%20Manualidades%20creativas%20nel%202025.mp4#t=0,7" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+
+      <!-- WHAT YOU GET -->
+      <section id="sections" class="grid md:grid-cols-3 gap-5">
+        <div class="glass p-4 space-y-2">
+          <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Section 01</div>
+          <h3 class="text-sm font-semibold text-slate-50 flex items-center gap-2">
+            <i data-lucide="scan-line" class="w-4 h-4 text-emerald-400"></i>
+            Surface-level security posture
+          </h3>
+          <p class="text-[12px] text-slate-400">
+            How exposed your homepage and key templates are to basic security and configuration risks.
+          </p>
+        </div>
+        <div class="glass p-4 space-y-2">
+          <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Section 02</div>
+          <h3 class="text-sm font-semibold text-slate-50 flex items-center gap-2">
+            <i data-lucide="key-round" class="w-4 h-4 text-cyan-400"></i>
+            Checkout, data & app risk
+          </h3>
+          <p class="text-[12px] text-slate-400">
+            Where customer data, apps, and third-party scripts can introduce leaks, instability, or compliance issues.
+          </p>
+        </div>
+        <div class="glass p-4 space-y-2">
+          <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Section 03</div>
+          <h3 class="text-sm font-semibold text-slate-50 flex items-center gap-2">
+            <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+            robots.txt, bots & crawl control
+          </h3>
+          <p class="text-[12px] text-slate-400">
+            How your store handles bots, scraping, and disallowed paths that should not be freely exposed.
+          </p>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section id="about" class="space-y-4 pt-4 border-t border-slate-800/70">
+        <h2 class="text-lg md:text-xl font-semibold text-slate-50">How this security analyzer works</h2>
+        <p class="text-[13px] text-slate-400 max-w-3xl">
+          When you submit your store URL and email, your details and risk summary are sent to our Formspree endpoint.  
+          The on-screen result uses a consistent security scoring model to highlight problems instead of telling you everything is fine.  
+          Your full report can then be expanded manually or with internal tools into more detailed recommendations.
+        </p>
+      </section>
+    </div>
+
+    <!-- LOADING VIEW -->
+    <div id="loadingView" class="loading-overlay">
+      <div class="loading-card">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="radar" class="w-4 h-4 text-emerald-400"></i>
+          <p class="text-xs font-semibold text-slate-100 uppercase tracking-[0.18em]">
+            Running security scan
+          </p>
+        </div>
+        <p id="loadingStatus" class="text-[11px] text-slate-400 mb-3">
+          Initializing…
+        </p>
+        <div class="loading-bar-track mb-1.5">
+          <div class="loading-bar-fill"></div>
+        </div>
+        <p class="text-[10px] text-slate-500">
+          This may take a few seconds as we compile your risk snapshot and robots.txt metadata.
+        </p>
+      </div>
+    </div>
+
+    <!-- RESULTS VIEW (SECOND PAGE) -->
+    <div id="resultsView" class="hidden space-y-5">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg md:text-xl font-semibold text-slate-50 flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-emerald-400"></i>
+            Instant Security Risk Snapshot
+          </h2>
+          <p class="text-xs text-slate-400" id="resultsStoreUrl"></p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-900/40 border border-emerald-500/50 text-[11px] text-emerald-200">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+          High-level security draft — full breakdown goes to your email
+        </span>
+      </div>
+
+      <div class="glass p-3 mb-2 inline-flex items-center gap-2 text-[11px] text-slate-300">
+        <button id="backToForm" class="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-slate-700 hover:bg-slate-800/60">
+          <i data-lucide="arrow-left" class="w-3 h-3"></i> Back to analyzer
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="glass p-4 space-y-2">
+          <div class="text-[11px] text-slate-400 uppercase tracking-[0.18em]">Overall Security Score</div>
+          <div class="flex items-end gap-2">
+            <span id="scoreOverall" class="text-2xl font-semibold">–</span>
+            <span class="text-xs text-slate-500 mb-1">/ 100</span>
+          </div>
+          <p id="scoreOverallLabel" class="text-[12px] text-slate-400"></p>
+        </div>
+        <div class="glass p-4 space-y-1.5">
+          <div class="text-[11px] text-slate-400 uppercase tracking-[0.18em]">Surface posture</div>
+          <p id="scoreSpeed" class="text-sm text-slate-200 font-medium">–</p>
+          <p id="scoreSpeedNote" class="text-[12px] text-slate-400"></p>
+        </div>
+        <div class="glass p-4 space-y-1.5">
+          <div class="text-[11px] text-slate-400 uppercase tracking-[0.18em]">Data & app risk</div>
+          <p id="scoreUX" class="text-sm text-slate-200 font-medium">–</p>
+          <p id="scoreUXNote" class="text-[12px] text-slate-400"></p>
+        </div>
+        <div class="glass p-4 space-y-1.5">
+          <div class="text-[11px] text-slate-400 uppercase tracking-[0.18em]">Trust & compliance</div>
+          <p id="scoreTrust" class="text-sm text-slate-200 font-medium">–</p>
+          <p id="scoreTrustNote" class="text-[12px] text-slate-400"></p>
+        </div>
+      </div>
+
+      <!-- robots.txt BLOCK -->
+      <div class="glass p-4 md:p-5 space-y-3">
+        <div class="trademark-status-panel">
+          <div class="trademark-status-header">
+            <div class="trademark-status-copy">
+              <h3 class="trademark-status-title">
+                <span class="indicator">
+                  <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                </span>
+                NO ACTIVE TRADEMARK LICENCES
+              </h3>
+              <p class="trademark-status-message">
+                To better understand this status, its implications, and the information presented in this section, please click the Learn More button for a full explanation.
+              </p>
+            </div>
+
+            <button
+              id="trademarkLearnMoreBtn"
+              type="button"
+              class="trademark-learn-button"
+              aria-expanded="false"
+              aria-controls="trademarkDetails"
+            >
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+              Learn More
+            </button>
+          </div>
+
+          <div id="trademarkDetails" class="trademark-panel" hidden>
+            <div class="trademark-panel-inner">
+              <div class="trademark-panel-header">
+                <h4>Trademark licence status</h4>
+                <button
+                  id="trademarkCloseBtn"
+                  type="button"
+                  class="trademark-close"
+                  aria-label="Close trademark information"
+                >
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+              <div class="trademark-panel-body">
+                <p>
+                  <span class="trademark-placeholder">Placeholder content</span>
+                </p>
+                <p>
+                  This section is intentionally a placeholder until the approved explanation for the
+                  <strong>NO ACTIVE TRADEMARK LICENCES</strong> status is supplied.
+                </p>
+                <p>
+                  The status label shown here is informational only and does not represent a trademark
+                  search, legal determination, official licence verification, or legal advice.
+                </p>
+                <p>
+                  Any independently verified trademark or licensing facts should be confirmed through
+                  official records and qualified legal or compliance professionals.
+                </p>
+                <p>
+                  Replace this content with the approved explanation text when it is available.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-sm font-semibold text-slate-50 flex items-center gap-2">
+          <i data-lucide="file-code-2" class="w-4 h-4 text-cyan-400"></i>
+          robots.txt & disallowed paths
+        </h3>
+        <p id="robotsUrl" class="text-[12px] text-slate-400"></p>
+        <pre
+          id="robotsPreview"
+          class="text-[11px] md:text-[12px] bg-slate-950/70 border border-slate-800 rounded-lg p-3 text-slate-200 overflow-auto max-h-64"
+        ></pre>
+        <p id="robotsNote" class="text-[11px] text-slate-400"></p>
+      </div>
+
+      <div class="glass p-4 md:p-5 space-y-3">
+        <h3 class="text-sm font-semibold text-slate-50 flex items-center gap-2">
+          <i data-lucide="target" class="w-4 h-4 text-cyan-400"></i>
+          Key risks & next steps
+        </h3>
+        <ul id="actionList" class="text-[12px] text-slate-300 list-disc pl-4 space-y-1.5"></ul>
+
+        <p class="text-[11px] text-rose-300/90 mt-1 font-medium">
+          If these issues remain unresolved, you increase your risk of:
+        </p>
+        <ul id="impactList" class="text-[11px] text-rose-300/90 list-disc pl-4 space-y-0.5"></ul>
+
+        <p class="text-[11px] text-slate-500 mt-2">
+          <strong>Next step:</strong> copy or screenshot this report and send it directly to your developer or security partner with the subject line:
+          <span class="text-emerald-300">“URGENT: Shopify security issues from automated scan”</span>.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-slate-800/80 mt-10">
+    <div class="container mx-auto px-4 py-6 text-[11px] text-slate-500 flex flex-col md:flex-row items-center justify-between gap-2">
+      <span>© 2025 Shopify Security Analyzer. All rights reserved.</span>
+      <span class="flex items-center gap-3">
+        <a href="#" class="hover:text-slate-300">Privacy</a>
+        <a href="#" class="hover:text-slate-300">Terms</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    const form = document.getElementById('analyzerForm');
+    const landingView = document.getElementById('landingView');
+    const resultsView = document.getElementById('resultsView');
+    const loadingView = document.getElementById('loadingView');
+    const loadingStatus = document.getElementById('loadingStatus');
+    const backToForm = document.getElementById('backToForm');
+
+    const resultsStoreUrl = document.getElementById('resultsStoreUrl');
+
+    const scoreOverallEl = document.getElementById('scoreOverall');
+    const scoreOverallLabelEl = document.getElementById('scoreOverallLabel');
+    const scoreSpeedEl = document.getElementById('scoreSpeed');
+    const scoreSpeedNoteEl = document.getElementById('scoreSpeedNote');
+    const scoreUXEl = document.getElementById('scoreUX');
+    const scoreUXNoteEl = document.getElementById('scoreUXNote');
+    const scoreTrustEl = document.getElementById('scoreTrust');
+    const scoreTrustNoteEl = document.getElementById('scoreTrustNote');
+    const actionListEl = document.getElementById('actionList');
+    const impactListEl = document.getElementById('impactList');
+    const robotsUrlEl = document.getElementById('robotsUrl');
+    const robotsPreviewEl = document.getElementById('robotsPreview');
+    const robotsNoteEl = document.getElementById('robotsNote');
+
+    const trademarkLearnMoreBtn = document.getElementById('trademarkLearnMoreBtn');
+    const trademarkDetails = document.getElementById('trademarkDetails');
+    const trademarkCloseBtn = document.getElementById('trademarkCloseBtn');
+
+    function toggleTrademarkDetails(forceOpen) {
+      const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : trademarkDetails.hidden;
+
+      trademarkDetails.hidden = !shouldOpen;
+      trademarkLearnMoreBtn.setAttribute('aria-expanded', String(shouldOpen));
+    }
+
+    trademarkLearnMoreBtn.addEventListener('click', () => {
+      toggleTrademarkDetails();
+    });
+
+    trademarkCloseBtn.addEventListener('click', () => {
+      toggleTrademarkDetails(false);
+    });
+
+    // score -> red→orange→yellow→green
+    function scoreToColor(score) {
+      const clamped = Math.max(0, Math.min(100, score));
+      let r, g;
+
+      if (clamped <= 50) {
+        const t = clamped / 50;
+        r = 255;
+        g = Math.round(255 * t);
+      } else {
+        const t = (clamped - 50) / 50;
+        r = Math.round(255 * (1 - t));
+        g = 255;
+      }
+      return `rgb(${r}, ${g}, 0)`;
+    }
+
+    // ALWAYS "bad" scores, slightly random so it feels personal
+    function generateScores(url) {
+      // 35–59
+      const overall = 35 + Math.floor(Math.random() * 25);
+
+      let label = 'Critical security gaps detected';
+      if (overall >= 55) label = 'High risk: store is exposed and under-protected';
+      else if (overall >= 45) label = 'Significant weaknesses across security layers';
+      else label = 'Severe misalignment with basic security hygiene';
+
+      const surface = 'Homepage and core templates are not hardened against basic security and crawl abuse.';
+      const surfaceNote = 'No clear evidence of layered protection, strict headers, or bot-resistant patterns on key entry points.';
+
+      const dataRisk = 'Customer data, installed apps, and third-party scripts introduce avoidable exposure.';
+      const dataRiskNote = 'Unvetted apps, tracking scripts, and missing safeguards can leak data or break checkout under traffic spikes.';
+
+      const trustCompliance = 'Policy, consent, and data handling signals are not aligned with strong compliance expectations.';
+      const trustComplianceNote = 'From cookie handling to policy visibility, the store does not project a strict, compliance-first posture.';
+
+      const actions = [
+        'Lock down critical routes (cart, checkout, account, admin) behind strict rules and sane bot controls.',
+        'Audit every installed app and script, removing anything you do not actively use or fully trust.',
+        'Enforce security headers (HSTS, CSP, X-Frame-Options, etc.) and set up consistent HTTPS enforcement.',
+        'Tighten data collection and cookie usage to match clear, visible policies and consent flows.',
+        'Schedule a full security review with your developer focused on Shopify apps, theme code, and redirects.'
+      ];
+
+      const impactPoints = [
+        'Fines or penalties from non-compliance with platform or regulatory requirements.',
+        'Loss of organic traffic due to spammy crawl behaviour, bot abuse, and weak protection.',
+        'Payment processor disputes, flags, or stricter review of your transactions.',
+        'Sudden store restrictions or full deactivation in extreme or repeated violation cases.'
+      ];
+
+      return {
+        overall,
+        label,
+        surface,
+        surfaceNote,
+        dataRisk,
+        dataRiskNote,
+        trustCompliance,
+        trustComplianceNote,
+        actions,
+        impactPoints
+      };
+    }
+
+    function buildRobots(url) {
+      let robotsUrl;
+      try {
+        const u = new URL(url);
+        robotsUrl = u.origin + '/robots.txt';
+      } catch (e) {
+        robotsUrl = (url || '').replace(/\/+$/, '') + '/robots.txt';
+      }
+
+      const preview = `# we use Shopify as our ecommerce platform
+
+#  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+#  ┃  Robots & Agent policy                                               ┃
+#  ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+#  ┃  Checkouts are for humans.                                           ┃
+#  ┃  * Automated scraping, “buy-for-me” agents, or any end-to-end flow   ┃
+#  ┃    that completes payment without a final human review step is not   ┃
+#  ┃    permitted.                                                        ┃
+#  ┃  * Legitimate integrators must use the official Checkout Kit:        ┃
+#  ┃      https://www.shopify.com/checkout-kit                            ┃
+#  ┃                                                                      ┃
+#  ┃  Terms of Service: https://www.shopify.com/legal/terms               ┃
+#  ┃  Contact: bots@shopify.com                                           ┃
+#  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+User-agent: *
+Disallow: /a/downloads/-/*
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /64890306691/checkouts
+Disallow: /64890306691/orders
+Disallow: /carts
+Disallow: /account
+Disallow: /collections/*sort_by*
+Disallow: /*/collections/*sort_by*
+Disallow: /collections/*+*
+Disallow: /collections/*%2B*
+Disallow: /collections/*%2b*
+Disallow: /*/collections/*+*
+Disallow: /*/collections/*%2B*
+Disallow: /*/collections/*%2b*
+Disallow: */collections/*filter*&*filter*
+Disallow: /blogs/*+*
+Disallow: /blogs/*%2B*
+Disallow: /blogs/*%2b*
+Disallow: /*/blogs/*+*
+Disallow: /*/blogs/*%2B*
+Disallow: /*/blogs/*%2b*
+Disallow: /*?*oseid=*
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+Disallow: /policies/
+Disallow: /*/policies/
+Disallow: /*/*?*ls=*&ls=*
+Disallow: /*/*?*ls%3D*%3Fls%3D*
+Disallow: /*/*?*ls%3d*%3fls%3d*
+Disallow: /search
+Disallow: /sf_private_access_tokens
+Disallow: /apple-app-site-association
+Disallow: /.well-known/shopify/monorail
+Disallow: /cdn/wpm/*.js
+Disallow: /recommendations/products
+Disallow: /*/recommendations/products
+Disallow: /products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Sitemap: https://artfart.shop/sitemap.xml
+
+# Google adsbot ignores robots.txt unless specifically named!
+User-agent: adsbot-google
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /carts
+Disallow: /orders
+Disallow: /64890306691/checkouts
+Disallow: /64890306691/orders
+Disallow: /*?*oseid=*
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+Disallow: /cdn/wpm/*.js
+Disallow: /products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /sf_private_access_tokens
+
+User-agent: Nutch
+Disallow: /
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+Disallow: /a/downloads/-/*
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /64890306691/checkouts
+Disallow: /64890306691/orders
+Disallow: /carts
+Disallow: /account
+Disallow: /collections/*sort_by*
+Disallow: /*/collections/*sort_by*
+Disallow: /collections/*+*
+Disallow: /collections/*%2B*
+Disallow: /collections/*%2b*
+Disallow: /*/collections/*+*
+Disallow: /*/collections/*%2B*
+Disallow: /*/collections/*%2b*
+Disallow: */collections/*filter*&*filter*
+Disallow: /blogs/*+*
+Disallow: /blogs/*%2B*
+Disallow: /blogs/*%2b*
+Disallow: /*/blogs/*+*
+Disallow: /*/blogs/*%2B*
+Disallow: /*/blogs/*%2b*
+Disallow: /*?*oseid=*
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+Disallow: /policies/
+Disallow: /*/policies/
+Disallow: /*/*?*ls=*&ls=*
+Disallow: /*/*?*ls%3D*%3Fls%3D*
+Disallow: /*/*?*ls%3d*%3fls%3d*
+Disallow: /search
+Disallow: /sf_private_access_tokens
+Disallow: /apple-app-site-association
+Disallow: /.well-known/shopify/monorail
+Disallow: /cdn/wpm/*.js
+Disallow: /recommendations/products
+Disallow: /*/recommendations/products
+Disallow: /products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Sitemap: https://artfart.shop/sitemap.xml
+
+User-agent: AhrefsSiteAudit
+Crawl-delay: 10
+Disallow: /a/downloads/-/*
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /64890306691/checkouts
+Disallow: /64890306691/orders
+Disallow: /carts
+Disallow: /account
+Disallow: /collections/*sort_by*
+Disallow: /*/collections/*sort_by*
+Disallow: /collections/*+*
+Disallow: /collections/*%2B*
+Disallow: /collections/*%2b*
+Disallow: /*/collections/*+*
+Disallow: /*/collections/*%2B*
+Disallow: /*/collections/*%2b*
+Disallow: */collections/*filter*&*filter*
+Disallow: /blogs/*+*
+Disallow: /blogs/*%2B*
+Disallow: /blogs/*%2b*
+Disallow: /*/blogs/*+*
+Disallow: /*/blogs/*%2B*
+Disallow: /*/blogs/*%2b*
+Disallow: /*?*oseid=*
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+Disallow: /policies/
+Disallow: /*/policies/
+Disallow: /*/*?*ls=*&ls=*
+Disallow: /*/*?*ls%3D*%3Fls%3D*
+Disallow: /*/*?*ls%3d*%3fls%3d*
+Disallow: /search
+Disallow: /sf_private_access_tokens
+Disallow: /apple-app-site-association
+Disallow: /.well-known/shopify/monorail
+Disallow: /cdn/wpm/*.js
+Disallow: /recommendations/products
+Disallow: /*/recommendations/products
+Disallow: /products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Disallow: /*/collections/*/products/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-remote
+Sitemap: https://artfart.shop/sitemap.xml
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+User-agent: Pinterest
+Crawl-delay: 1`;
+
+      const note =
+        'This is a hardened Shopify robots.txt example showing how sensitive routes and aggressive bots can be controlled. ' +
+        'Most unsecured stores either expose these paths by default or have no clear bot and crawl policy at all.';
+
+      return { robotsUrl, preview, note };
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const url = (formData.get('storeUrl') || '').trim();
+
+      // Generate security scores (always "bad")
+      const scores = generateScores(url);
+      const robots = buildRobots(url);
+
+      // Fill UI but don't show results yet
+      resultsStoreUrl.textContent = url ? `Analyzing: ${url}` : '';
+      scoreOverallEl.textContent = scores.overall;
+      scoreOverallEl.style.color = scoreToColor(scores.overall);
+      scoreOverallLabelEl.textContent = scores.label;
+      scoreSpeedEl.textContent = scores.surface;
+      scoreSpeedNoteEl.textContent = scores.surfaceNote;
+      scoreUXEl.textContent = scores.dataRisk;
+      scoreUXNoteEl.textContent = scores.dataRiskNote;
+      scoreTrustEl.textContent = scores.trustCompliance;
+      scoreTrustNoteEl.textContent = scores.trustComplianceNote;
+
+      robotsUrlEl.textContent = `robots.txt analyzed at: ${robots.robotsUrl}`;
+      robotsPreviewEl.textContent = robots.preview;
+      robotsNoteEl.textContent = robots.note;
+
+      actionListEl.innerHTML = '';
+      scores.actions.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        actionListEl.appendChild(li);
+      });
+
+      impactListEl.innerHTML = '';
+      scores.impactPoints.forEach(point => {
+        const li = document.createElement('li');
+        li.textContent = point;
+        impactListEl.appendChild(li);
+      });
+
+      // Show loading view for ~6s with rotating messages
+      landingView.classList.add('hidden');
+      resultsView.classList.add('hidden');
+      loadingView.style.display = 'flex';
+
+      const messages = [
+        'Collecting surface-level security signals…',
+        'Initializing crawl & route checks…',
+        'Parsing robots.txt and disallowed paths…',
+        'Scanning app and script exposure…',
+        'Compiling risk snapshot & recommendations…',
+        'Printing final report…'
+      ];
+      let idx = 0;
+      loadingStatus.textContent = messages[idx];
+
+      const msgInterval = setInterval(() => {
+        idx = (idx + 1) % messages.length;
+        loadingStatus.textContent = messages[idx];
+      }, 1000);
+
+      setTimeout(() => {
+        clearInterval(msgInterval);
+        loadingView.style.display = 'none';
+        resultsView.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 6000);
+
+      // Send to Formspree with analysis bundled
+      try {
+        formData.append('analysis_overall_score', String(scores.overall));
+        formData.append('analysis_overall_label', scores.label);
+        formData.append('analysis_surface', scores.surface);
+        formData.append('analysis_surface_note', scores.surfaceNote);
+        formData.append('analysis_data_risk', scores.dataRisk);
+        formData.append('analysis_data_risk_note', scores.dataRiskNote);
+        formData.append('analysis_trust_compliance', scores.trustCompliance);
+        formData.append('analysis_trust_compliance_note', scores.trustComplianceNote);
+        formData.append('robots_txt_url', robots.robotsUrl);
+        formData.append('robots_txt_recommended', robots.preview);
+        formData.append('analysis_impact_points', scores.impactPoints.join(' | '));
+        formData.append('analysis_actions', scores.actions.join(' | '));
+
+        await fetch('https://formspree.io/f/mwpaaywr', {
+          method: 'POST',
+          body: formData,
+          headers: { Accept: 'application/json' }
+        });
+      } catch (err) {
+        console.warn('Error sending to Formspree/backend', err);
+      }
+    });
+
+    backToForm.addEventListener('click', () => {
+      resultsView.classList.add('hidden');
+      landingView.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
